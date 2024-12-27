@@ -41,7 +41,10 @@ public class Lox {
 	for (;;) {
 	    System.out.print("> ");
 	    String line = reader.readLine();
+	    
+	    // exit the REPL with 'Ctrl-D'
 	    if (line == null) break;
+	    
 	    run(line);
 	    hadError = false;
 	}
@@ -62,7 +65,8 @@ public class Lox {
     }
 
     private static void report(int line, String where, String message) {
-	System.err.println("[line " + line + "] Error" + where + ": " + message);
+	System.err.println("[line " + line + "] Error"
+			   + where + ": " + message);
 	hadError = true;
     }
 }
