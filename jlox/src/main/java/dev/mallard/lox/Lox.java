@@ -31,7 +31,8 @@ public class Lox {
 	run(new String(bytes, Charset.defaultCharset()));
 
 	// indicate an error in the exit code
-	if (hadError) System.exit(65);
+	if (hadError)
+	    System.exit(65);
     }
 
     private static void runPrompt() throws IOException {
@@ -41,10 +42,11 @@ public class Lox {
 	for (;;) {
 	    System.out.print("> ");
 	    String line = reader.readLine();
-	    
+
 	    // exit the REPL with 'Ctrl-D'
-	    if (line == null) break;
-	    
+	    if (line == null)
+		break;
+
 	    run(line);
 	    hadError = false;
 	}
@@ -66,7 +68,7 @@ public class Lox {
 
     private static void report(int line, String where, String message) {
 	System.err.println("[line " + line + "] Error"
-			   + where + ": " + message);
+		+ where + ": " + message);
 	hadError = true;
     }
 }
