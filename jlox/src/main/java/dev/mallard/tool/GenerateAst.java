@@ -18,14 +18,19 @@ public class GenerateAst {
 	}
 	String outputDir = args[0];
 
-	String[] defs = {
+	String[] exprs = {
 	    "Binary   : Expr left, Token operator, Expr right",
 	    "Grouping : Expr expression",
 	    "Literal  : Object value",
 	    "Unary    : Token operator, Expr right"
 	};
+	defineAst(outputDir, "Expr", Arrays.asList(exprs));
 
-	defineAst(outputDir, "Expr", Arrays.asList(defs));
+	String[] stmts = {
+	    "Expression : Expr expression",
+	    "Print      : Expr expression"
+	};
+	defineAst(outputDir, "Stmt", Arrays.asList(stmts));
     }
 
     private static void defineAst(String outputDir, String baseName, List<String> types) throws IOException {
