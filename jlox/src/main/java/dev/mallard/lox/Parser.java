@@ -10,197 +10,232 @@ import static dev.mallard.lox.TokenType.*;
  * a list of Tokens into an Abstract Syntax Tree.
  */
 class Parser {
-    private static class ParseError extends RuntimeException {}
+    private static class ParseError extends RuntimeException {
+    }
 
     private final List<Token> tokens;
     private int current = 0;
 
     Parser(List<Token> tokens) {
-	this.tokens = tokens;
+        this.tokens = tokens;
     }
 
     List<Stmt> parse() {
-	List<Stmt> statements = new ArrayList<>();
-	while (!isAtEnd())
-	    statements.add(statement());
+        List<Stmt> statements = new ArrayList<>();
+        while (!isAtEnd())
+            statements.add(declaration());
 
-	return statements;
+        return statements;
     }
 
-    // we start with the lowest precedence...
-    private Stmt statement() {
-	if (match(PRINT))
-	    return printStatement();
+    private Stmt declaration() {
+        try {
+            if (match(VAR))
+                return varDeclaration();
 
-	return expressionStatement();
+            return statement();
+        } catch (ParseError error) {
+            synchronize();
+            return null;
+        }
+    }
+
+    private Stmt varDeclaration() {
+        Token name = consume(IDENTIFIER, "Expect variable name.");
+
+        Expr initializer = null;
+        if (match(EQUAL))
+            initializer = expression();
+
+        consume(SEMICOLON, "Expect ';' after a variable declaration.");
+        return new Stmt.Var(name, initializer);
+    }
+
+    private Stmt statement() {
+        if (match(PRINT))
+            return printStatement();
+
+        return expressionStatement();
     }
 
     private Stmt printStatement() {
-	Expr value = expression();
-	consume(SEMICOLON, "Expect ';' after value.");
-	return new Stmt.Print(value);
+        Expr value = expression();
+        consume(SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Print(value);
     }
 
     private Stmt expressionStatement() {
-	Expr expr = expression();
-	consume(SEMICOLON, "Expect ';' after expression.");
-	return new Stmt.Expression(expr);
+        Expr expr = expression();
+        consume(SEMICOLON, "Expect ';' after expression.");
+        return new Stmt.Expression(expr);
     }
 
     private Expr expression() {
-	return equality();
+        return equality();
     }
 
     private Expr equality() {
-	Expr expr = comparison();
+        Expr expr = comparison();
 
-	while (match(BANG_EQUAL, EQUAL_EQUAL)) {
-	    Token operator = previous();
-	    Expr right = comparison();
-	    expr = new Expr.Binary(expr, operator, right);
-	}
+        while (match(BANG_EQUAL, EQUAL_EQUAL)) {
+            Token operator = previous();
+            Expr right = comparison();
+            expr = new Expr.Binary(expr, operator, right);
+        }
 
-	return expr;
+        return expr;
     }
 
     private Expr comparison() {
-	Expr expr = term();
+        Expr expr = term();
 
-	while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
-	    Token operator = previous();
-	    Expr right = term();
-	    expr = new Expr.Binary(expr, operator, right);
-	}
+        while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
+            Token operator = previous();
+            Expr right = term();
+            expr = new Expr.Binary(expr, operator, right);
+        }
 
-	return expr;
-    };
+        return expr;
+    }
+
+    ;
 
     private Expr term() {
-	Expr expr = factor();
+        Expr expr = factor();
 
-	while (match(MINUS, PLUS)) {
-	    Token operator = previous();
-	    Expr right = factor();
-	    expr = new Expr.Binary(expr, operator, right);
-	}
+        while (match(MINUS, PLUS)) {
+            Token operator = previous();
+            Expr right = factor();
+            expr = new Expr.Binary(expr, operator, right);
+        }
 
-	return expr;
-    };
+        return expr;
+    }
+
+    ;
 
     private Expr factor() {
-	Expr expr = unary();
+        Expr expr = unary();
 
-	while (match(SLASH, STAR)) {
-	    Token operator = previous();
-	    Expr right = unary();
-	    expr = new Expr.Binary(expr, operator, right);
-	}
+        while (match(SLASH, STAR)) {
+            Token operator = previous();
+            Expr right = unary();
+            expr = new Expr.Binary(expr, operator, right);
+        }
 
-	return expr;
-    };
+        return expr;
+    }
+
+    ;
 
     private Expr unary() {
-	if (match(BANG, MINUS)) {
-	    Token operator = previous();
-	    Expr right = unary();
-	    return new Expr.Unary(operator, right);
-	}
+        if (match(BANG, MINUS)) {
+            Token operator = previous();
+            Expr right = unary();
+            return new Expr.Unary(operator, right);
+        }
 
-	return primary();
-    };
+        return primary();
+    }
 
-    // ...and finish with the highest precedence
+    ;
+
     private Expr primary() {
-	if (match(FALSE))
-	    return new Expr.Literal(false);
-	if (match(TRUE))
-	    return new Expr.Literal(true);
-	if (match(NIL))
-	    return new Expr.Literal(null);
+        if (match(FALSE))
+            return new Expr.Literal(false);
+        if (match(TRUE))
+            return new Expr.Literal(true);
+        if (match(NIL))
+            return new Expr.Literal(null);
 
-	if (match(NUMBER, STRING))
-	    return new Expr.Literal(previous().literal);
+        if (match(NUMBER, STRING))
+            return new Expr.Literal(previous().literal);
 
-	if (match(LEFT_PAREN)) {
-	    Expr expr = expression();
-	    consume(RIGHT_PAREN, "Expect ')' after expression.");
-	    return new Expr.Grouping(expr);
-	}
+        if (match(IDENTIFIER))
+            return new Expr.Variable(previous());
 
-	throw error(peek(), "Expect expression.");
-    };
+        if (match(LEFT_PAREN)) {
+            Expr expr = expression();
+            consume(RIGHT_PAREN, "Expect ')' after expression.");
+            return new Expr.Grouping(expr);
+        }
+
+        throw error(peek(), "Expect expression.");
+    }
+
+    ;
 
     // utility methods
     private boolean match(TokenType... types) {
-	for (TokenType type : types) {
-	    if (check(type)) {
-		advance();
-		return true;
-	    }
-	}
+        for (TokenType type : types) {
+            if (check(type)) {
+                advance();
+                return true;
+            }
+        }
 
-	return false;
+        return false;
     }
 
     private Token consume(TokenType type, String message) {
-	if (check(type))
-	    return advance();
+        if (check(type))
+            return advance();
 
-	throw error(peek(), message);
+        throw error(peek(), message);
     }
 
     private boolean check(TokenType type) {
-	if (isAtEnd())
-	    return false;
+        if (isAtEnd())
+            return false;
 
-	return peek().type == type;
+        return peek().type == type;
     }
 
     private Token advance() {
-	if (!isAtEnd())
-	    current++;
+        if (!isAtEnd())
+            current++;
 
-	return previous();
+        return previous();
     }
 
     private boolean isAtEnd() {
-	return peek().type == EOF;
+        return peek().type == EOF;
     }
 
     private Token peek() {
-	return tokens.get(current);
+        return tokens.get(current);
     }
 
     private Token previous() {
-	return tokens.get(current - 1);
+        return tokens.get(current - 1);
     }
 
     // error handling methods
     private ParseError error(Token token, String message) {
-	Lox.error(token, message);
-	return new ParseError();
+        Lox.error(token, message);
+        return new ParseError();
     }
 
     private void synchronize() {
-	advance();
+        advance();
 
-	while (!isAtEnd()) {
-	    if (previous().type == SEMICOLON)
-		return;
+        while (!isAtEnd()) {
+            if (previous().type == SEMICOLON)
+                return;
 
-	    switch (peek().type) {
-	    case CLASS:
-	    case FUN:
-	    case VAR:
-	    case FOR:
-	    case IF:
-	    case WHILE:
-	    case PRINT:
-	    case RETURN:
-		return;
-	    }
+            switch (peek().type) {
+                case CLASS:
+                case FUN:
+                case VAR:
+                case FOR:
+                case IF:
+                case WHILE:
+                case PRINT:
+                case RETURN:
+                    return;
+            }
 
-	    advance();
-	}
+            advance();
+        }
     }
 }
