@@ -19,23 +19,23 @@ public class GenerateAst {
         String outputDir = args[0];
 
         String[] exprs = {
-                "Assign   : Token name, Expr value",
-                "Binary   : Expr left, Token operator, Expr right",
-                "Grouping : Expr expression",
-                "Literal  : Object value",
-                "Logical  : Expr left, Token operator, Expr right",
-                "Unary    : Token operator, Expr right",
-                "Variable : Token name"
+            "Assign   : Token name, Expr value",
+            "Binary   : Expr left, Token operator, Expr right",
+            "Grouping : Expr expression",
+            "Literal  : Object value",
+            "Logical  : Expr left, Token operator, Expr right",
+            "Unary    : Token operator, Expr right",
+            "Variable : Token name"
         };
         defineAst(outputDir, "Expr", Arrays.asList(exprs));
 
         String[] stmts = {
-                "Block      : List<Stmt> statements",
-                "Expression : Expr expression",
-                "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
-                "Print      : Expr expression",
-                "Var        : Token name, Expr initializer",
-                "While      : Expr condition, Stmt body"
+            "Block      : List<Stmt> statements",
+            "Expression : Expr expression",
+            "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
+            "Print      : Expr expression",
+            "Var        : Token name, Expr initializer",
+            "While      : Expr condition, Stmt body"
         };
         defineAst(outputDir, "Stmt", Arrays.asList(stmts));
     }
@@ -72,8 +72,7 @@ public class GenerateAst {
 
         for (String type : types) {
             String typeName = type.split(":")[0].trim();
-            writer.println("        R visit" + typeName + baseName + "("
-                    + typeName + " " + baseName.toLowerCase() + ");");
+            writer.println("        R visit" + typeName + baseName + "(" + typeName + " " + baseName.toLowerCase() + ");");
         }
 
         writer.println("    }");
@@ -98,8 +97,7 @@ public class GenerateAst {
         writer.println();
         writer.println("        @Override");
         writer.println("        <R> R accept(Visitor<R> visitor) {");
-        writer.println("            return visitor.visit" + className
-                + baseName + "(this);");
+        writer.println("            return visitor.visit" + className + baseName + "(this);");
         writer.println("        }");
 
         // fields

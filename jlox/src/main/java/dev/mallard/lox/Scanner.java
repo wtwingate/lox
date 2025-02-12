@@ -231,8 +231,8 @@ class Scanner {
 
     private boolean isAlpha(char c) {
         return (c >= 'a' && c <= 'z')
-                || (c >= 'A' && c <= 'Z')
-                || c == '_';
+            || (c >= 'A' && c <= 'Z')
+            || c == '_';
     }
 
     private boolean isDigit(char c) {

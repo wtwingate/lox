@@ -43,13 +43,12 @@ public class Lox {
         InputStreamReader input = new InputStreamReader(System.in);
         BufferedReader reader = new BufferedReader(input);
 
-        for (; ; ) {
+        for (;;) {
             System.out.print("> ");
             String line = reader.readLine();
 
             // exit the REPL with 'Ctrl-D'
-            if (line == null)
-                break;
+            if (line == null) break;
 
             run(line);
             hadError = false;
@@ -63,8 +62,7 @@ public class Lox {
         List<Stmt> statements = parser.parse();
 
         // stop if there was a syntax error
-        if (hadError)
-            return;
+        if (hadError) return;
 
         interpreter.interpret(statements);
     }
@@ -76,8 +74,7 @@ public class Lox {
     }
 
     private static void report(int line, String where, String message) {
-        System.err.println("[line " + line + "] Error"
-                + where + ": " + message);
+        System.err.println("[line " + line + "] Error" + where + ": " + message);
         hadError = true;
     }
 
@@ -90,8 +87,7 @@ public class Lox {
     }
 
     static void runtimeError(RuntimeError error) {
-        System.err.println(error.getMessage() + "\n[line "
-                + error.token.line + "]");
+        System.err.println(error.getMessage() + "\n[line " + error.token.line + "]");
         hadRuntimeError = true;
     }
 }

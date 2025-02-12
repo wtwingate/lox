@@ -7,8 +7,7 @@ import java.util.List;
  * evaluating the expressions in the Abstract Syntax Tree and
  * returning a single value.
  */
-class Interpreter implements Expr.Visitor<Object>,
-        Stmt.Visitor<Void> {
+class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     private Environment environment = new Environment();
 
     void interpret(List<Stmt> statements) {
@@ -229,7 +228,7 @@ class Interpreter implements Expr.Visitor<Object>,
     }
 
     private void checkNumberOperands(Token operator,
-                                     Object left, Object right) {
+            Object left, Object right) {
         if (left instanceof Double && right instanceof Double)
             return;
         throw new RuntimeError(operator, "Operands must be numbers.");

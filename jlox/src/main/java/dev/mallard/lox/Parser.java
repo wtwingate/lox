@@ -218,8 +218,6 @@ class Parser {
         return expr;
     }
 
-    ;
-
     private Expr term() {
         Expr expr = factor();
 
@@ -231,8 +229,6 @@ class Parser {
 
         return expr;
     }
-
-    ;
 
     private Expr factor() {
         Expr expr = unary();
@@ -246,8 +242,6 @@ class Parser {
         return expr;
     }
 
-    ;
-
     private Expr unary() {
         if (match(BANG, MINUS)) {
             Token operator = previous();
@@ -257,8 +251,6 @@ class Parser {
 
         return primary();
     }
-
-    ;
 
     private Expr primary() {
         if (match(FALSE))
@@ -282,8 +274,6 @@ class Parser {
 
         throw error(peek(), "Expect expression.");
     }
-
-    ;
 
     // utility methods
     private boolean match(TokenType... types) {
