@@ -51,25 +51,25 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
         return parenthesize(";", stmt.expression);
     }
 
-    // @Override
-    // public String visitFunctionStmt(Stmt.Function stmt) {
-    //     StringBuilder builder = new StringBuilder();
-    //     builder.append("(fun " + stmt.name.lexeme + "(");
+    @Override
+    public String visitFunctionStmt(Stmt.Function stmt) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("(fun " + stmt.name.lexeme + "(");
 
-    //     for (Token param : stmt.params) {
-    //         if (param != stmt.params.get(0)) builder.append(" ");
-    //         builder.append(param.lexeme);
-    //     }
+        for (Token param : stmt.params) {
+            if (param != stmt.params.get(0)) builder.append(" ");
+            builder.append(param.lexeme);
+        }
 
-    //     builder.append(") ");
+        builder.append(") ");
 
-    //     for (Stmt body : stmt.body) {
-    //         builder.append(body.accept(this));
-    //     }
+        for (Stmt body : stmt.body) {
+            builder.append(body.accept(this));
+        }
 
-    //     builder.append(")");
-    //     return builder.toString();
-    // }
+        builder.append(")");
+        return builder.toString();
+    }
 
     @Override
     public String visitIfStmt(Stmt.If stmt) {
@@ -85,11 +85,11 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
         return parenthesize("print", stmt.expression);
     }
 
-    // @Override
-    // public String visitReturnStmt(Stmt.Return stmt) {
-    //     if (stmt.value == null) return "(return)";
-    //     return parenthesize("return", stmt.value);
-    // }
+    @Override
+    public String visitReturnStmt(Stmt.Return stmt) {
+        if (stmt.value == null) return "(return)";
+        return parenthesize("return", stmt.value);
+    }
 
     @Override
     public String visitVarStmt(Stmt.Var stmt) {
@@ -115,10 +115,10 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
         return parenthesize(expr.operator.lexeme, expr.left, expr.right);
     }
 
-    // @Override
-    // public String visitCallExpr(Expr.Call expr) {
-    //     return parenthesize2("call", expr.callee, expr.arguments);
-    // }
+    @Override
+    public String visitCallExpr(Expr.Call expr) {
+        return parenthesize2("call", expr.callee, expr.arguments);
+    }
 
     // @Override
     // public String visitGetExpr(Expr.Get expr) {
