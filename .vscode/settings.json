@@ -1,0 +1,6 @@
+{
+  "java.project.sourcePaths": ["jlox/src"],
+  "java.project.outputPath": "jlox/bin",
+  "java.project.referencedLibraries": ["jlox/lib/**/*.jar"],
+  "java.project.exportJar.targetPath": "${workspaceFolder}/jlox.jar"
+}
